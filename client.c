@@ -13,6 +13,15 @@ SOCKADDR_IN createServer();
 int main() {
 	initWinsock();
 	SOCKADDR_IN server = createServer();
+	
+	SOCKET connection = socket(AF_INET, SOCK_STREAM, NULL);
+	if (connect(connection, (SOCKADDR*)&server, sizeof(server)) == SOCKET_ERROR) {
+		puts("Connect failed");
+		exit(WSAGetLastError());
+	}
+	else {
+		puts("Connected");
+	}
 }
 
 void initWinsock() {
