@@ -37,7 +37,7 @@ int main() {
 
 		// Проверяем, успешно ли удалился файл
 		int resultStatus = remove(filenameToDelete);
-		printf("Filename: %s\nResult: %d", filenameToDelete, resultStatus);
+		printf("Filename: %s\nResult: %d\n", filenameToDelete, resultStatus);
 		/* Статус передается в строке (массиве типа char из двух элементов), поскольку функции для передачи (send и recv) работают со строками.
 		* Для передачи на сервер статус удаления файла переводится в строку из числа*/
 		char result[2] = { resultStatus + '0', '\0' };
