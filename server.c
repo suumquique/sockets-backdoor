@@ -101,6 +101,8 @@ int deleteFileFromClient(SOCKET currentConnection) {
 		return SOCKET_ERROR;
 	}
 
+	/* Статус передается в строке (массиве типа char из двух элементов), поскольку функции для передачи (send и recv) работают со строками.
+	* После передачи статус переводится назад в числовое значение */
 	resultStatus = result[0] - '0';
 	return !resultStatus ? resultStatus : FILE_REMOVING_ERROR;
 }
