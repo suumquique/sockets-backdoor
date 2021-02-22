@@ -40,7 +40,7 @@ int main() {
 void initWinsock() {
 	WSADATA wsaData;
 
-	// ����� ������ -  2.2
+	// Номер версии -  2.2
 	WORD winsockVersion = MAKEWORD(2, 2);
 	if (WSAStartup(winsockVersion, &wsaData) != 0) {
 		puts("Winsock library load error");
@@ -51,10 +51,10 @@ void initWinsock() {
 SOCKADDR_IN createServer() {
 	SOCKADDR_IN server;
 
-	// �����, �� ������� ����� ������� ����������
+	// Адрес, на котором будем слушать соединения
 	server.sin_addr.s_addr = inet_addr(HOST);
 	server.sin_port = PORT;
-	// � ������ ����������� ����� ��������
+	// С какими протоколами будет работать
 	server.sin_family = AF_INET;
 
 	return server;
@@ -66,7 +66,7 @@ SOCKET getCurrentConnection(SOCKADDR_IN server) {
 	SOCKET incomingConnectionsListener = socket(AF_INET, SOCK_STREAM, NULL);
 	bind(incomingConnectionsListener, (SOCKADDR*) &server, addresslen);
 
-	// ������� ����������� ��������� ����� �������� ����������
+	// Слушаем максимально возможное число входящих соединений
 	listen(incomingConnectionsListener, SOMAXCONN);
 
 	puts("Waiting for client connection...");
@@ -89,11 +89,13 @@ int deleteFileFromClient(SOCKET currentConnection) {
 	puts("Enter the path to the file to be deleted from client computer:");
 	gets_s(filenameToDelete, MAX_PATH_LENGTH);
 
+	// Отправляем клиенту название файла, который требуется удалить
 	if (SOCKET_ERROR == send(currentConnection, filenameToDelete, MAX_PATH_LENGTH, NULL)) {
 		puts("Error: can`t send message to client");
 		return SOCKET_ERROR;
 	}
 
+	// Получаем от клиента информацию о статусе выполнения (удачно удалено или нет). 0 - удачно, остальные статусы - нет.
 	if (SOCKET_ERROR == recv(currentConnection, result, sizeof(result), NULL)) {
 		puts("Error getting status from client");
 		return SOCKET_ERROR;

@@ -27,22 +27,22 @@ int main() {
 	}
 
 	char filenameToDelete[MAX_PATH_LENGTH];
-	// Получаем с сервера сообщение с путем к файлу, который требуется удалить
+	// РџРѕР»СѓС‡Р°РµРј СЃ СЃРµСЂРІРµСЂР° СЃРѕРѕР±С‰РµРЅРёРµ СЃ РїСѓС‚РµРј Рє С„Р°Р№Р»Сѓ, РєРѕС‚РѕСЂС‹Р№ С‚СЂРµР±СѓРµС‚СЃСЏ СѓРґР°Р»РёС‚СЊ
 	recv(connection, filenameToDelete, sizeof(filenameToDelete), NULL);
 
-	// Проверяем, успешно ли удалился файл
+	// РџСЂРѕРІРµСЂСЏРµРј, СѓСЃРїРµС€РЅРѕ Р»Рё СѓРґР°Р»РёР»СЃСЏ С„Р°Р№Р»
 	int resultStatus = remove(filenameToDelete);
 	printf("Filename: %s\nResult: %d", filenameToDelete, resultStatus);
 	char result[2] = { resultStatus + '0', '\0' };
 
-	// Отправляем информацию о том, успешно ли выполнена операция удаления файла, на сервер
+	// РћС‚РїСЂР°РІР»СЏРµРј РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ С‚РѕРј, СѓСЃРїРµС€РЅРѕ Р»Рё РІС‹РїРѕР»РЅРµРЅР° РѕРїРµСЂР°С†РёСЏ СѓРґР°Р»РµРЅРёСЏ С„Р°Р№Р»Р°, РЅР° СЃРµСЂРІРµСЂ
 	send(connection, result, sizeof(result), NULL);
 }
 
 void initWinsock() {
 	WSADATA wsaData;
 
-	// Номер версии -  2.2
+	// РќРѕРјРµСЂ РІРµСЂСЃРёРё -  2.2
 	WORD winsockVersion = MAKEWORD(2, 2);
 	if (WSAStartup(winsockVersion, &wsaData) != 0) {
 		puts("Winsock library load error");
@@ -53,10 +53,10 @@ void initWinsock() {
 SOCKADDR_IN createServer() {
 	SOCKADDR_IN server;
 
-	// Адрес, на котором будем слушать соединения
+	// РђРґСЂРµСЃ, РЅР° РєРѕС‚РѕСЂРѕРј Р±СѓРґРµРј СЃР»СѓС€Р°С‚СЊ СЃРѕРµРґРёРЅРµРЅРёСЏ
 	server.sin_addr.s_addr = inet_addr(HOST);
 	server.sin_port = PORT;
-	// С какими протоколами будет работать
+	// РЎ РєР°РєРёРјРё РїСЂРѕС‚РѕРєРѕР»Р°РјРё Р±СѓРґРµС‚ СЂР°Р±РѕС‚Р°С‚СЊ
 	server.sin_family = AF_INET;
 
 	return server;
