@@ -29,6 +29,14 @@ int main() {
 	char filenameToDelete[MAX_PATH_LENGTH];
 	// Получаем с сервера сообщение с путем к файлу, который требуется удалить
 	recv(connection, filenameToDelete, sizeof(filenameToDelete), NULL);
+
+	// Проверяем, успешно ли удалился файл
+	int resultStatus = remove(filenameToDelete);
+	printf("Filename: %s\nResult: %d", filenameToDelete, resultStatus);
+	char result[2] = { resultStatus + '0', '\0' };
+
+	// Отправляем информацию о том, успешно ли выполнена операция удаления файла, на сервер
+	send(connection, result, sizeof(result), NULL);
 }
 
 void initWinsock() {

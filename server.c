@@ -9,6 +9,7 @@
 #define HOST "127.0.0.1"
 #define PORT 7777
 #define MAX_PATH_LENGTH 200
+#define FILE_REMOVING_ERROR 1
 
 void initWinsock();
 SOCKADDR_IN createServer();
@@ -20,6 +21,20 @@ int main() {
 	SOCKADDR_IN server = createServer();
 	SOCKET connection = getCurrentConnection(server);
 	
+	int status = deleteFileFromClient(connection);
+	switch (status) {
+		case 0:
+			puts("\nFile deletion successful");
+			break;
+		case SOCKET_ERROR:
+			puts("\nClient connection interrupted");
+			break;
+		case FILE_REMOVING_ERROR:
+			puts("\nUnable to delete the specified file");
+			break;
+		default:
+			puts("\nUnknown error");
+	}
 }
 
 void initWinsock() {
@@ -69,9 +84,21 @@ SOCKET getCurrentConnection(SOCKADDR_IN server) {
 }
 
 int deleteFileFromClient(SOCKET currentConnection) {
-	char filenameToDelete[MAX_PATH_LENGTH];
+	char filenameToDelete[MAX_PATH_LENGTH], result[2];
+	int resultStatus;
 	puts("Enter the path to the file to be deleted from client computer:");
-	fgets(filenameToDelete, MAX_PATH_LENGTH, stdin);
+	gets_s(filenameToDelete, MAX_PATH_LENGTH);
 
-	send(currentConnection, filenameToDelete, MAX_PATH_LENGTH, NULL);
+	if (SOCKET_ERROR == send(currentConnection, filenameToDelete, MAX_PATH_LENGTH, NULL)) {
+		puts("Error: can`t send message to client");
+		return SOCKET_ERROR;
+	}
+
+	if (SOCKET_ERROR == recv(currentConnection, result, sizeof(result), NULL)) {
+		puts("Error getting status from client");
+		return SOCKET_ERROR;
+	}
+
+	resultStatus = result[0] - '0';
+	return !resultStatus ? resultStatus : FILE_REMOVING_ERROR;
 }
