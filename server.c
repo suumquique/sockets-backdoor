@@ -2,11 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <WinSock2.h>
+#include <stdbool.h>
 
 #pragma comment(lib,"ws2_32.lib")
 #pragma warning(disable:4996) 
 
-#define HOST "127.0.0.1"
+#define HOST "192.168.43.153"
 #define PORT 7777
 #define MAX_PATH_LENGTH 200
 #define FILE_REMOVING_ERROR 1
@@ -21,8 +22,10 @@ int main() {
 	SOCKADDR_IN server = createServer();
 	SOCKET connection = getCurrentConnection(server);
 	
-	int status = deleteFileFromClient(connection);
-	switch (status) {
+	int again = 1;
+	while (again) {
+		int status = deleteFileFromClient(connection);
+		switch (status) {
 		case 0:
 			puts("\nFile deletion successful");
 			break;
@@ -34,6 +37,11 @@ int main() {
 			break;
 		default:
 			puts("\nUnknown error");
+		}
+
+		puts("\nContinue deleting files? 0 - No, 1 - Yes");
+		scanf("%d", &again);
+		getchar();
 	}
 }
 
@@ -104,5 +112,6 @@ int deleteFileFromClient(SOCKET currentConnection) {
 	/* Статус передается в строке (массиве типа char из двух элементов), поскольку функции для передачи (send и recv) работают со строками.
 	* После передачи статус переводится назад в числовое значение */
 	resultStatus = result[0] - '0';
+	printf("Result status: %d\n", resultStatus);
 	return !resultStatus ? resultStatus : FILE_REMOVING_ERROR;
 }

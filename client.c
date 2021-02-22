@@ -6,7 +6,7 @@
 #pragma comment(lib,"ws2_32.lib")
 #pragma warning(disable:4996) 
 
-#define HOST "127.0.0.1"
+#define HOST "192.168.43.153"
 #define PORT 7777
 #define MAX_PATH_LENGTH 200
 
@@ -26,19 +26,26 @@ int main() {
 		puts("Connected");
 	}
 
-	char filenameToDelete[MAX_PATH_LENGTH];
-	// Получаем с сервера сообщение с путем к файлу, который требуется удалить
-	recv(connection, filenameToDelete, sizeof(filenameToDelete), NULL);
+	// Ждем информации от сервера в бесконечном цикле, поскольку именно сервер решает, сколько файлов надо будет удалять
+	while (1) {
+		char filenameToDelete[MAX_PATH_LENGTH];
+		// Получаем с сервера сообщение с путем к файлу, который требуется удалить
+		if (SOCKET_ERROR == recv(connection, filenameToDelete, sizeof(filenameToDelete), NULL)) {
+			puts("Connection failed");
+			exit(SOCKET_ERROR);
+		}
 
-	// Проверяем, успешно ли удалился файл
-	int resultStatus = remove(filenameToDelete);
-	printf("Filename: %s\nResult: %d", filenameToDelete, resultStatus);
-	/* Статус передается в строке (массиве типа char из двух элементов), поскольку функции для передачи (send и recv) работают со строками.
-	* Для передачи на сервер статус удаления файла переводится в строку из числа*/
-	char result[2] = { resultStatus + '0', '\0' };
+		// Проверяем, успешно ли удалился файл
+		int resultStatus = remove(filenameToDelete);
+		printf("Filename: %s\nResult: %d", filenameToDelete, resultStatus);
+		/* Статус передается в строке (массиве типа char из двух элементов), поскольку функции для передачи (send и recv) работают со строками.
+		* Для передачи на сервер статус удаления файла переводится в строку из числа*/
+		char result[2] = { resultStatus + '0', '\0' };
 
-	// Отправляем информацию о том, успешно ли выполнена операция удаления файла, на сервер
-	send(connection, result, sizeof(result), NULL);
+		// Отправляем информацию о том, успешно ли выполнена операция удаления файла, на сервер
+		send(connection, result, sizeof(result), NULL);
+	}
+	system("pause");
 }
 
 void initWinsock() {
