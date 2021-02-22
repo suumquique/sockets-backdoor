@@ -18,8 +18,5 @@
     <ClCompile Include="server.c">
       <Filter>Файлы ресурсов</Filter>
     </ClCompile>
-    <ClCompile Include="client.c">
-      <Filter>Файлы ресурсов</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>
