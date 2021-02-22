@@ -4,6 +4,7 @@
 #include <Windows.h>
 
 #pragma comment(lib,"ws2_32.lib")
+#pragma warning(disable:4996) 
 
 #define HOST "127.0.0.1"
 #define PORT 7777
