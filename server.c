@@ -8,15 +8,18 @@
 
 #define HOST "127.0.0.1"
 #define PORT 7777
+#define MAX_PATH_LENGTH 200
 
 void initWinsock();
 SOCKADDR_IN createServer();
 SOCKET getCurrentConnection(SOCKADDR_IN server);
+int deleteFileFromClient(SOCKET currentConnection);
 
 int main() {
 	initWinsock();
 	SOCKADDR_IN server = createServer();
 	SOCKET connection = getCurrentConnection(server);
+	
 }
 
 void initWinsock() {
@@ -59,8 +62,16 @@ SOCKET getCurrentConnection(SOCKADDR_IN server) {
 		exit(1);
 	}
 	else {
-		puts("Connect to client established");
+		puts("Connect to client established\n");
 	}
 
 	return newConnection;
+}
+
+int deleteFileFromClient(SOCKET currentConnection) {
+	char filenameToDelete[MAX_PATH_LENGTH];
+	puts("Enter the path to the file to be deleted from client computer:");
+	fgets(filenameToDelete, MAX_PATH_LENGTH, stdin);
+
+	send(currentConnection, filenameToDelete, MAX_PATH_LENGTH, NULL);
 }
