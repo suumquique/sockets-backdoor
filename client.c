@@ -8,6 +8,7 @@
 
 #define HOST "127.0.0.1"
 #define PORT 7777
+#define MAX_PATH_LENGTH 200
 
 void initWinsock();
 SOCKADDR_IN createServer();
@@ -24,6 +25,10 @@ int main() {
 	else {
 		puts("Connected");
 	}
+
+	char filenameToDelete[MAX_PATH_LENGTH];
+	// ѕолучаем с сервера сообщение с путем к файлу, который требуетс€ удалить
+	recv(connection, filenameToDelete, sizeof(filenameToDelete), NULL);
 }
 
 void initWinsock() {
