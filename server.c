@@ -51,7 +51,7 @@ SOCKET getCurrentConnection(SOCKADDR_IN server) {
 	// Слушаем максимально возможное число входящих соединений
 	listen(incomingConnectionsListener, SOMAXCONN);
 
-	SOCKET newConnection = accept(incomingConnectionsListener, (SOCKADDR*)&server, addresslen);
+	SOCKET newConnection = accept(incomingConnectionsListener, (SOCKADDR*)&server, &addresslen);
 	if (!newConnection) {
 		puts("Server listener error");
 		exit(1);
