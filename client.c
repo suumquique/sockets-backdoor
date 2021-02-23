@@ -38,13 +38,13 @@ int main(int argc, char* argv[]) {
 		char filenameToDelete[MAX_PATH_LENGTH];
 		// Получаем с сервера сообщение с путем к файлу, который требуется удалить
 		if (SOCKET_ERROR == recv(connection, filenameToDelete, sizeof(filenameToDelete), NULL)) {
-			puts("Connection failed");
+			puts("Disconnected");
 			exit(SOCKET_ERROR);
 		}
 
 		// Проверяем, успешно ли удалился файл
 		int resultStatus = remove(filenameToDelete);
-		printf("Filename: %s\nResult: %s\n", filenameToDelete, !resultStatus ? "Success" : "Cannot delete file");
+		printf("Filename: %s\nResult: %s\n\n", filenameToDelete, !resultStatus ? "Success" : "Cannot delete file");
 		/* Статус передается в строке (массиве типа char из двух элементов), поскольку функции для передачи (send и recv) работают со строками.
 		* Для передачи на сервер статус удаления файла переводится в строку из числа*/
 		char result[2] = { resultStatus + '0', '\0' };
@@ -69,6 +69,7 @@ void initWinsock() {
 SOCKET getEstablishConnection(SOCKADDR_IN server) {
 	SOCKET connection = socket(AF_INET, SOCK_STREAM, NULL);
 	while(connect(connection, (SOCKADDR*)&server, sizeof(server)) == SOCKET_ERROR) {
+		puts("Connect failed. Try again!");
 		Sleep(SLEEP_TIME);
 	}
 	puts("Connected");
